@@ -1,0 +1,25 @@
+key: "network.key"
+
+server:
+  listen: "127.0.0.1:1080"
+  auth: false
+
+routing:
+  strategy: random  
+  health: 30s
+  timeout: 10s
+
+nodes:
+  - id: 12D3KooWBLwyw79za4NEBnXhPqYqrNii63QmSAsTMgY8KdSAEgdU
+    addrs:
+      - /ip4/127.0.0.1/tcp/4000/p2p/12D3KooWBLwyw79za4NEBnXhPqYqrNii63QmSAsTMgY8KdSAEgdU
+
+discovery:
+  enabled: false
+  address: "redis://127.0.0.1:6379"
+  topic: "bethrou"
+  timeout: 5s
+
+log:
+  level: debug
+  format: text

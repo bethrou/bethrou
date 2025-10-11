@@ -1,0 +1,78 @@
+name: Release Build (multi-arch, with/without CGO)
+
+on:
+  release:
+    types: [published]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        goos: [linux]
+        goarch: [amd64, arm64, arm, 386, riscv64, ppc64le, s390x]
+        cgo_enabled: [0, 1]
+
+    env:
+      GO111MODULE: on
+      CGO_ENABLED: ${{ matrix.cgo_enabled }}
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.7'
+
+      - name: Install cross-compilers (for CGO)
+        if: matrix.cgo_enabled == 1
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            gcc-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabihf \
+            gcc-riscv64-linux-gnu \
+            gcc-powerpc64le-linux-gnu \
+            gcc-s390x-linux-gnu
+
+      - name: Configure CC for CGO
+        if: matrix.cgo_enabled == 1
+        run: |
+          case $GOARCH in
+            amd64)   echo "Using default GCC" ;;
+            arm64)   echo "CC=aarch64-linux-gnu-gcc" >> $GITHUB_ENV ;;
+            arm)     echo "CC=arm-linux-gnueabihf-gcc" >> $GITHUB_ENV ;;
+            riscv64) echo "CC=riscv64-linux-gnu-gcc" >> $GITHUB_ENV ;;
+            ppc64le) echo "CC=powerpc64le-linux-gnu-gcc" >> $GITHUB_ENV ;;
+            s390x)   echo "CC=s390x-linux-gnu-gcc" >> $GITHUB_ENV ;;
+          esac
+
+      - name: Build node binary
+        run: |
+          mkdir -p dist
+          OUTPUT="dist/${{ matrix.goos }}_${{ matrix.goarch }}_cgo${{ matrix.cgo_enabled }}"
+          go build -v -o "$OUTPUT/bethrou-node" ./node
+          echo "Built $OUTPUT/bethrou-node"
+
+      - name: Build client binary
+        run: |
+          OUTPUT="dist/${{ matrix.goos }}_${{ matrix.goarch }}_cgo${{ matrix.cgo_enabled }}"
+          go build -v -o "$OUTPUT/bethrou-client" ./client
+          echo "Built $OUTPUT/bethrou-client"
+
+      - name: Upload binaries to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/${{ matrix.goos }}_${{ matrix.goarch }}_cgo${{ matrix.cgo_enabled }}/bethrou-node
+            dist/${{ matrix.goos }}_${{ matrix.goarch }}_cgo${{ matrix.cgo_enabled }}/bethrou-client
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

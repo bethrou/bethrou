@@ -1,0 +1,97 @@
+title: Bethrou Config Schema
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: |
+  Schema for the bethrou client configuration. Mirrors the Go structs in
+  `client/config/config.go` and `pkg/config/config.go`.
+required: [key, server, routing, discovery, log]
+properties:
+  key:
+    type: string
+    description: "Path to network.key file for private network authentication. Required."
+  server:
+    type: object
+    required: [listen]
+    properties:
+      listen:
+        type: string
+        description: "Listen address for the local SOCKS server (host:port)."
+      auth:
+        type: boolean
+        description: "Enable user/password auth for the SOCKS server."
+      user:
+        type: string
+        description: "Username for SOCKS auth (required when auth=true)."
+      pass:
+        type: string
+        description: "Password for SOCKS auth (required when auth=true)."
+    additionalProperties: false
+  routing:
+    type: object
+    properties:
+      strategy:
+        type: string
+        enum: ["", "random", "fastest", "round-robin"]
+        description: "Routing strategy. Empty means default/random."
+      health:
+        type: string
+        description: "Duration string for health check intervals (e.g. 5s, 1m)."
+      timeout:
+        type: string
+        description: "Duration string for routing timeout (e.g. 10s)."
+    additionalProperties: false
+  nodes:
+    type: array
+    description: "Static list of nodes. At least one node OR discovery.enabled must be set."
+    items:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+          description: "Unique node identifier."
+        addrs:
+          type: array
+          items:
+            type: string
+          description: "Addresses for the node (multiaddr or host:port)."
+        relay:
+          type: string
+          description: "Optional relay address for the node."
+      additionalProperties: false
+  discovery:
+    type: object
+    required: [enabled]
+    properties:
+      enabled:
+        type: boolean
+        description: "Enable discovery service. If true, address and topic are required."
+      address:
+        type: string
+        description: "Address of the discovery service (e.g. redis://host:port)."
+      topic:
+        type: string
+        description: "Topic/namespace used by discovery."
+      timeout:
+        type: string
+        description: "Duration string for discovery timeouts."
+      user:
+        type: string
+        description: "Optional username for discovery service."
+      pass:
+        type: string
+        description: "Optional password for discovery service."
+    additionalProperties: false
+  log:
+    type: object
+    required: [level, format]
+    properties:
+      level:
+        type: string
+        description: "Logging level (info, debug, warn, error). Default: info."
+      format:
+        type: string
+        enum: [text, json]
+        description: "Log output format. Allowed: text or json. Default: text."
+    additionalProperties: false
+additionalProperties: false

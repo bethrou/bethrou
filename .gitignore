@@ -1,0 +1,34 @@
+# Binaries
+bethrou
+bethrou-node
+bethrou-client
+node/bethrou-node
+client/bethrou-client
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+tmp/
+
+# key
+network.key
+node.key
+
+# Documentation (Node.js)
+/docs/node_modules/
+/docs/.docusaurus/
+/docs/build/
+/docs/.cache/
