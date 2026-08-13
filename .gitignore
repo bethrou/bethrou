@@ -1,0 +1,31 @@
+# Binaries
+bethrou
+client/bethrou
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+tmp/
+
+# Keys
+network.key
+client.key
+client.key*
+
+# Environment files (local secrets) — never commit these.
+.env
+.env.local
+.env.*.local

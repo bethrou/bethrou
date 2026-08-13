@@ -1,0 +1,38 @@
+# Example client config. Copy to client.yaml (the default --config path)
+# and fill in real values.
+
+# Path to the shared network PSK ("network.key") for this private network.
+key: "network.key"
+
+server:
+  # Local SOCKS5 listen address.
+  listen: "127.0.0.1:1080"
+  auth: false
+  # Required if auth: true.
+  user: ""
+  pass: ""
+  # Allow binding SOCKS on a non-loopback address without auth. Unsafe;
+  # leave false unless you understand the exposure.
+  allow_insecure_bind: false
+
+routing:
+  # "", "random", "fastest", or "round-robin".
+  strategy: random
+  health: 30s
+  timeout: 10s
+
+# Path to this client's persistent identity key, generated on first run
+# if it doesn't exist yet.
+identity_key: "client.key"
+
+# Control-plane API base URL this client authenticates to (run 'client
+# enroll' first).
+api_url: "https://saas.example.com"
+
+# Optional: pin which exit-node peer IDs to use. Left empty, the client
+# uses every node the control plane reports for this account instead.
+target_nodes: []
+
+log:
+  level: info
+  format: json

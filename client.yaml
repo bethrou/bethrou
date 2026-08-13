@@ -1,0 +1,18 @@
+key: "network.key"
+
+server:
+  listen: "127.0.0.1:1080"
+  auth: false
+
+routing:
+  strategy: random
+  health: 30s
+  timeout: 10s
+
+identity_key: "client.key"
+api_url: "http://localhost:8080"
+target_nodes: []
+
+log:
+  level: debug
+  format: text
