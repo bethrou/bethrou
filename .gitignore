@@ -1,6 +1,8 @@
-# Binaries
-bethrou
-client/bethrou
+# Binary — anchored to repo root so it doesn't also match the
+# cmd/bethrou/ directory (an unanchored pattern here previously matched
+# and silently excluded that whole directory, including main.go, from
+# git — it was never actually committed as a result).
+/bethrou
 
 # Logs
 *.log
